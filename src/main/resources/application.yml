@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: demo
+  profiles:
+    active: '@profileActive@'
+  jpa:
+    properties:
+      hibernate:
+        use_sql_comments: true
+        format_sql: false
+    open-in-view: false
+  output:
+    ansi:
+      enabled: detect
