@@ -18,89 +18,195 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.interview.demo.controller.CurrencyController;
+import com.interview.demo.dto.AddRequest;
+import com.interview.demo.dto.DelRequest;
 import com.interview.demo.dto.QueryRequest;
 import com.interview.demo.dto.QueryResponse;
+import com.interview.demo.dto.UpdateRequest;
 import com.interview.demo.entity.Currency;
 import com.interview.demo.repository.CurrencyRepository;
 import com.interview.demo.service.impl.CurrencyServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class CurrencyControllerMockMvcTest {
-	
+
 	@InjectMocks
 	CurrencyController controller;
 
 	@Mock
 	CurrencyRepository dao;
-	
+
 	@Mock
 	CurrencyServiceImpl service;
-	
+
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    void testGetCurrencyById_Found() throws Exception {
-    	
-        long currencyId = 1L;
-        Currency currency = new Currency(currencyId, "LLL", "TESTN");
-        List<Currency> currencyList = new ArrayList<>();
-        currencyList.add(currency);
-        QueryResponse response = new QueryResponse();
-        response.setCurrencyList(currencyList);
-        response.setStatus("Success");
-        QueryRequest request = new QueryRequest();
-        request.setId(currencyId);
+	private MockMvc mockMvc;
 
-        when(service.query(request)).thenReturn(response);
+	@Test
+	void testGetCurrencyById_Found() throws Exception {
 
-        // Setup MockMvc
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+		long currencyId = 1L;
+		Currency currency = new Currency(currencyId, "LLL", "TESTN");
+		List<Currency> currencyList = new ArrayList<>();
+		currencyList.add(currency);
+		QueryResponse response = new QueryResponse();
+		response.setCurrencyList(currencyList);
+		response.setStatus("Success");
+		QueryRequest request = new QueryRequest();
+		request.setId(currencyId);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                .post("/query")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())  // Adjust the expected status code as needed
-                .andExpect(jsonPath("$.STATUS").value("Success"))
-                .andReturn();
+		when(service.query(request)).thenReturn(response);
 
-        // Assert
-        verify(service, times(1)).query(request);
-    }
+		// Setup MockMvc
+		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
-    @Test
-    void testGetCurrencyById_NotFound() throws Exception {
-        // Arrange
-        long nonExistsId = 2L;
-        Currency currency = new Currency(nonExistsId, "LLL", "TESTN");
-        List<Currency> currencyList = new ArrayList<>();
-        currencyList.add(currency);
-        QueryResponse response = new QueryResponse();
-        response.setStatus("Fail, record not found.");
-        QueryRequest request = new QueryRequest();
-        request.setId(nonExistsId);
+		MvcResult result = mockMvc
+				.perform(MockMvcRequestBuilders.post("/query").content(objectMapper.writeValueAsString(request))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()) // Adjust the expected status code as needed
+				.andExpect(jsonPath("$.STATUS").value("Success")).andReturn();
 
-        when(service.query(request)).thenReturn(response);
+		String responseContent = result.getResponse().getContentAsString();
+		System.out.println("Response Content: " + responseContent);
 
-        // Setup MockMvc
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+		// Assert
+		verify(service, times(1)).query(request);
+	}
 
-        // Act
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                .post("/query")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())  // Adjust the expected status code as needed
-                .andExpect(jsonPath("$.STATUS").value("Fail, record not found."))
-                .andReturn();
-        
-        
-        // Assert
-        verify(service, times(1)).query(request);
-    }
+	@Test
+	void testGetCurrencyById_NotFound() throws Exception {
+		// Arrange
+		long nonExistsId = 2L;
+		QueryResponse response = new QueryResponse();
+		response.setStatus("Fail, record not found.");
+		QueryRequest request = new QueryRequest();
+		request.setId(nonExistsId);
 
+		when(service.query(request)).thenReturn(response);
+
+		// Setup MockMvc
+		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// Act
+		MvcResult result = mockMvc
+				.perform(MockMvcRequestBuilders.post("/query").content(objectMapper.writeValueAsString(request))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()) // Adjust the expected status code as needed
+				.andExpect(jsonPath("$.STATUS").value("Fail, record not found.")).andReturn();
+
+		String responseContent = result.getResponse().getContentAsString();
+		System.out.println("Response Content: " + responseContent);
+
+		// Assert
+		verify(service, times(1)).query(request);
+	}
+
+	@Test
+	void testAddCurrency_Success() throws Exception {
+		// Arrange
+		AddRequest requestData = new AddRequest();
+		requestData.setCode("NTD");
+		requestData.setName("新台幣");
+		QueryResponse response = new QueryResponse();
+		response.setStatus("Success");
+
+		when(service.add(requestData)).thenReturn(response);
+
+		// Setup MockMvc
+		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// Act
+		MvcResult result = mockMvc
+				.perform(MockMvcRequestBuilders.post("/add").content(objectMapper.writeValueAsString(requestData))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.STATUS").value("Success")).andReturn();
+
+		// Assert
+		String responseContent = result.getResponse().getContentAsString();
+		System.out.println("Response Content: " + responseContent);
+		verify(service, times(1)).add(requestData);
+	}
+
+	@Test
+	void testUpdateCurrency_Success() throws Exception {
+		// Arrange
+		Long currencyId = 11L;
+		UpdateRequest requestData = new UpdateRequest();
+		requestData.setId(currencyId);
+		requestData.setCode("NTD");
+		requestData.setName("新台幣");
+		QueryResponse response = new QueryResponse();
+		response.setStatus("Success");
+		when(service.update(requestData)).thenReturn(response);
+
+		// Setup MockMvc
+		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// Act
+		MvcResult result = mockMvc
+				.perform(MockMvcRequestBuilders.post("/update").content(objectMapper.writeValueAsString(requestData))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.STATUS").value("Success")).andReturn();
+
+		// Assert
+		String responseContent = result.getResponse().getContentAsString();
+		System.out.println("Response Content: " + responseContent);
+		verify(service, times(1)).update(requestData);
+	}
+
+	@Test
+	void testUpdateCurrency_Failure() throws Exception {
+		// Arrange
+		Long failCurrencyId = 222L;
+		UpdateRequest requestData = new UpdateRequest();
+		requestData.setId(failCurrencyId);
+		requestData.setCode("NTT");
+		requestData.setName("新台幣F");
+		QueryResponse response = new QueryResponse();
+		response.setStatus("Fail, Record not found.");
+		when(service.update(requestData)).thenReturn(response);
+
+		// Setup MockMvc
+		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// Act
+		MvcResult result = mockMvc
+				.perform(MockMvcRequestBuilders.post("/update").content(objectMapper.writeValueAsString(requestData))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.STATUS").value("Fail, Record not found."))
+				.andReturn();
+
+		// Assert
+		String responseContent = result.getResponse().getContentAsString();
+		System.out.println("Response Content: " + responseContent);
+		verify(service, times(1)).update(requestData);
+	}
+
+	@Test
+	void testDeleteCurrency_Success() throws Exception {
+		// Arrange
+		Long currencyId = 1111L;
+		DelRequest request = new DelRequest();
+		request.setId(currencyId);
+		QueryResponse response = new QueryResponse();
+		response.setStatus("Success");
+		when(service.del(request)).thenReturn(response);
+
+		// Setup MockMvc
+		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// Act
+		MvcResult result = mockMvc
+				.perform(MockMvcRequestBuilders.post("/del")
+						.content(objectMapper.writeValueAsString(request))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn();
+
+		// Assert
+		String responseContent = result.getResponse().getContentAsString();
+		System.out.println("Response Content: " + responseContent);
+		verify(service, times(1)).del(request);
+	}
 
 }
