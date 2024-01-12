@@ -37,7 +37,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 		BaseResponse response = new BaseResponse();
 
 		if (!currencyRepository.existsById(request.getId())) {
-			response.setStatus("Fail,  not exists.");
+			response.setStatus("Fail, Record not exists.");
 	        return response;
 		}
 
@@ -108,4 +108,14 @@ public class CurrencyServiceImpl implements CurrencyService {
         return response;
 	}
 
+	@Override
+	public Optional<Currency> queryByCode(String code) {
+		List<Currency> list = currencyRepository.findByCode(code);
+		if (list.isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(list.get(0));
+		}
+	}
+	
 }

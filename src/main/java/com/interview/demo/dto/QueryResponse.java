@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QueryResponse extends BaseResponse {
     
-	@ApiModelProperty(value = "比率清單")
+	@ApiModelProperty(value = "幣別清單")
     @JsonProperty("currencyList")
     private List<Currency> currencyList;
 }
