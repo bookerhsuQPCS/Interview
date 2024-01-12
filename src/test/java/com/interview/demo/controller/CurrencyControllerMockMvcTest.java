@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,7 +25,6 @@ import com.interview.demo.dto.QueryRequest;
 import com.interview.demo.dto.QueryResponse;
 import com.interview.demo.dto.UpdateRequest;
 import com.interview.demo.entity.Currency;
-import com.interview.demo.repository.CurrencyRepository;
 import com.interview.demo.service.impl.CurrencyServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,15 +34,13 @@ public class CurrencyControllerMockMvcTest {
 	CurrencyController controller;
 
 	@Mock
-	CurrencyRepository dao;
-
-	@Mock
 	CurrencyServiceImpl service;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
+	@Autowired
 	private MockMvc mockMvc;
 
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	
 	@Test
 	void testGetCurrencyById_Found() throws Exception {
 

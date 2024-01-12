@@ -8,6 +8,8 @@ import com.interview.demo.service.CurrencyService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -30,11 +32,24 @@ public class CoindeskServiceImpl implements CoindeskService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     private final static String COINDESK_SERVIC_URL = "https://api.coindesk.com/v1/bpi/currentprice.json";
+    
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    
+    @Override
+    public QueryCoindeskResponse queryRow() {
+    	return this.callAPIByGet(COINDESK_SERVIC_URL);
+    }
 
 	@Override
 	public QueryCoindeskResponse query() {
 		QueryCoindeskResponse response = this.callAPIByGet(COINDESK_SERVIC_URL);
 		if (response != null && response.getBpi() != null) {
+			LocalDateTime lt = LocalDateTime.now();
+			QueryCoindeskResponse.TnTime tnTime = new QueryCoindeskResponse.TnTime();
+			tnTime.setUpdated(dtf.format(lt));
+			tnTime.setUpdatedISO(lt.format(DateTimeFormatter.ISO_DATE_TIME));
+			tnTime.setUpdateduk(COINDESK_SERVIC_URL);
+			response.setTNtime(tnTime);
 			Iterator<Map.Entry<String, QueryCoindeskResponse.Bpi>> iterator = response.getBpi().entrySet().iterator();
 			while (iterator.hasNext()) {
 			    Map.Entry<String, QueryCoindeskResponse.Bpi> entry = iterator.next();

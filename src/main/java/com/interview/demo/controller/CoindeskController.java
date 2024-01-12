@@ -20,6 +20,12 @@ public class CoindeskController {
     @Autowired
     private CoindeskService coindeskService;
 
+    @PostMapping(value = "/getCoindeskRaw", produces = MediaType.APPLICATION_JSON_VALUE)
+    public QueryCoindeskResponse getCoindeskRaw() throws Exception {
+
+        return coindeskService.query();
+    }
+
     @PostMapping(value = "/getCoindesk", produces = MediaType.APPLICATION_JSON_VALUE)
     public QueryCoindeskResponse getCoindesk() throws Exception {
 

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.interview.demo.dto.*;
 import com.interview.demo.entity.Currency;
@@ -20,6 +21,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     private CurrencyRepository currencyRepository;
 
 	@Override
+    @Transactional
 	public BaseResponse add(AddRequest request) {
 		Currency currency = new Currency();
 		BaseResponse response = new BaseResponse();
@@ -33,6 +35,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 	}
 
 	@Override
+    @Transactional
 	public BaseResponse del(DelRequest request) {
 		BaseResponse response = new BaseResponse();
 
@@ -48,6 +51,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 	}
 
 	@Override
+    @Transactional
 	public BaseResponse update(UpdateRequest request) {
 		BaseResponse response = new BaseResponse();
 
@@ -116,6 +120,11 @@ public class CurrencyServiceImpl implements CurrencyService {
 		} else {
 			return Optional.of(list.get(0));
 		}
+	}
+	
+	@Override
+	public Optional<Currency> queryById(Long id) {
+		return currencyRepository.findById(id);
 	}
 	
 }

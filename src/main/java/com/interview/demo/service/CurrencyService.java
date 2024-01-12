@@ -11,4 +11,5 @@ public interface CurrencyService {
     public BaseResponse update(UpdateRequest request);
     public QueryResponse query(QueryRequest request);
     public Optional<Currency> queryByCode(String code);
+    public Optional<Currency> queryById(Long id);
 }
