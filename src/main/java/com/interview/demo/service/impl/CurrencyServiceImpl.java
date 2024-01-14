@@ -1,10 +1,8 @@
 package com.interview.demo.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,47 +67,23 @@ public class CurrencyServiceImpl implements CurrencyService {
         response.setStatus("Success");
         return response;
 	}
-
+	
 	@Override
-	public QueryResponse query(QueryRequest request) {
+	public QueryResponse findAll() {
+		List<Currency> list = currencyRepository.findAll();
 		QueryResponse response = new QueryResponse();
-		
-		if (request.getId() == null 
-				&& StringUtils.isBlank(request.getCode())
-				&& StringUtils.isBlank(request.getName())) {
-			response.setStatus("Fail, 查詢條件不能空白.");
-			return response;
-		}
-
-		if (request.getId() != null) {
-			Optional<Currency> optCurrency = currencyRepository.findById(request.getId());
-			if (optCurrency.isPresent()) {
-				List<Currency> list = new ArrayList<>();
-				list.add(optCurrency.get());
-				response.setCurrencyList(list);
-				response.setStatus("Success");
-			} else {
-				response.setStatus("Fail, record not found.");
-			}
-		} else if (StringUtils.isNotBlank(request.getCode())) {
-			List<Currency> list = currencyRepository.findByCode(request.getCode());
-			if (list.isEmpty()) {
-				response.setStatus("Fail, record not found.");
-			} else {
-				response.setStatus("Success");
-				response.setCurrencyList(list);
-			}
-		} else if (StringUtils.isNotEmpty(request.getName())) {
-			List<Currency> list = currencyRepository.findByName(request.getName());
-			if (list.isEmpty()) {
-				response.setStatus("Fail, record not found.");
-			} else {
-				response.setStatus("Success");
-				response.setCurrencyList(list);
-			}
-		}
-
-        return response;
+		response.setStatus("Success");
+		response.setCurrencyList(list);
+		return response;
+	}
+	
+	@Override
+	public QueryResponse queryByCode(QueryRequest request) {
+		List<Currency> list = currencyRepository.findByCode(request.getCode());
+		QueryResponse response = new QueryResponse();
+		response.setStatus("Success");
+		response.setCurrencyList(list);
+		return response;
 	}
 
 	@Override

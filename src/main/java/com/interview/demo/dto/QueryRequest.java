@@ -1,6 +1,8 @@
 package com.interview.demo.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -10,20 +12,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
 public class QueryRequest {
 
-    @ApiModelProperty(value = "ID", required = false)
-    @JsonProperty("ID")
-    private Long id;
-
-    @ApiModelProperty(value = "幣別代碼", required = false)
+    @ApiModelProperty(value = "幣別代碼", required = true)
+    @NotBlank(message = "幣別名稱不能代碼。")
+    @Size(max=3, min=3, message = "幣別代碼:[${validatedValue}] 必須為英文大寫三碼。")
     @JsonProperty("CODE")
     private String code;
-
-    @ApiModelProperty(value = "幣別名稱", required = false)
-    @JsonProperty("NAME")
-    private String name;
 }

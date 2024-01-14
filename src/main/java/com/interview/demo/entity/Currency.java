@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Currency implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@ApiModelProperty(value = "ID")
 	@JsonProperty("ID")
 	@Id
@@ -26,8 +28,6 @@ public class Currency implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "id")
 	@GenericGenerator(name = "id", strategy = "com.interview.demo.entity.ManualInsertGenerator")
 	private Long id;
-	
-
 
     @ApiModelProperty(value = "幣別代碼", required = false)
     @JsonProperty("CODE")

@@ -9,7 +9,8 @@ public interface CurrencyService {
     public BaseResponse add(AddRequest request);
     public BaseResponse del(DelRequest request);
     public BaseResponse update(UpdateRequest request);
-    public QueryResponse query(QueryRequest request);
+    public QueryResponse findAll();
+    public QueryResponse queryByCode(QueryRequest request);
     public Optional<Currency> queryByCode(String code);
     public Optional<Currency> queryById(Long id);
 }

@@ -9,7 +9,7 @@ import com.interview.demo.dto.UpdateRequest;
 import com.interview.demo.service.CurrencyService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+//import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api("Currency CURD Controller")
 @Validated
-@Slf4j
+//@Slf4j
 @RestController
 public class CurrencyController {
 
@@ -41,8 +41,13 @@ public class CurrencyController {
         return currencyService.update(request);
     }
 
-    @PostMapping(value = "/query", produces = MediaType.APPLICATION_JSON_VALUE)
-    public QueryResponse getQuery(@RequestBody QueryRequest request) throws Exception {
-        return currencyService.query(request);
+    @PostMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
+    public QueryResponse getAll() throws Exception {
+        return currencyService.findAll();
+    }
+
+    @PostMapping(value = "/findByCode", produces = MediaType.APPLICATION_JSON_VALUE)
+    public QueryResponse findByCode(@Valid @RequestBody QueryRequest request) throws Exception {
+        return currencyService.queryByCode(request);
     }
 }

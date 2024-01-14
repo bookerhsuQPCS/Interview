@@ -6,6 +6,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.interview.demo.dto.AddRequest;
 import com.interview.demo.dto.BaseResponse;
 import com.interview.demo.dto.DelRequest;
-import com.interview.demo.dto.QueryRequest;
 import com.interview.demo.dto.UpdateRequest;
 import com.interview.demo.entity.Currency;
 import com.interview.demo.repository.CurrencyRepository;
@@ -29,6 +31,23 @@ public class CurrencyServicerMockTest {
 
 	@Mock
 	private CurrencyRepository dao;
+
+	@Test
+	void testQueryCurrency() {
+
+		List<Currency> list = new ArrayList<>();
+		Currency currency = new Currency();
+		currency.setCode("TYN");
+		currency.setName("測試幣");
+		list.add(currency);
+
+		when(dao.findAll()).thenReturn(list);
+
+		BaseResponse respons = service.findAll();
+
+		assertEquals(respons.getStatus(), "Success");
+		verify(dao, times(1)).findAll();
+	}
 
 	@Test
 	void testCreateCurrency() {
@@ -89,36 +108,6 @@ public class CurrencyServicerMockTest {
 		nonExistingCurrency.setName(nonExistingRequest.getName());
 
 		verify(dao, never()).save(nonExistingCurrency);
-	}
-
-	@Test
-	void testQueryCurrencyById() {
-		QueryRequest qryCurrency = new QueryRequest();
-		qryCurrency.setId(26L);
-
-		service.query(qryCurrency);
-
-		verify(dao, times(1)).findById(qryCurrency.getId());
-	}
-
-	@Test
-	void testQueryCurrencyByCode() {
-		QueryRequest qryCurrency = new QueryRequest();
-		qryCurrency.setCode("YCC");
-
-		service.query(qryCurrency);
-
-		verify(dao, times(1)).findByCode(qryCurrency.getCode());
-	}
-
-	@Test
-	void testQueryCurrencyByName() {
-		QueryRequest qryCurrency = new QueryRequest();
-		qryCurrency.setName("測試幣");
-
-		service.query(qryCurrency);
-
-		verify(dao, times(1)).findByName(qryCurrency.getName());
 	}
 
 	@Test

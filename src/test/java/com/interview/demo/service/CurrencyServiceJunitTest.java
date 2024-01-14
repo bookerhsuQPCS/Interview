@@ -12,6 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import com.interview.demo.dto.AddRequest;
 import com.interview.demo.dto.BaseResponse;
 import com.interview.demo.dto.DelRequest;
+import com.interview.demo.dto.QueryResponse;
 import com.interview.demo.dto.UpdateRequest;
 import com.interview.demo.entity.Currency;
 
@@ -32,6 +33,16 @@ class CurrencyServiceJunitTest {
 
     @Test
     @Order(1)
+    void testGetCurrencyByCode() {
+    	QueryResponse respose = currencyService.findAll();
+    	assertNotNull(respose);
+        assertFalse(respose.getCurrencyList().isEmpty());
+        
+        System.out.println("Response : " + respose.toString());
+    }
+
+    @Test
+    @Order(2)
     void testAddCurrency() {
         AddRequest addCurrency = new AddRequest();
         addCurrency.setCode("YNC");
@@ -48,17 +59,6 @@ class CurrencyServiceJunitTest {
         
         addedCurrencyId = optCurrency.get().getId();
         System.out.println("Response addedCurrencyId: " + addedCurrencyId);
-    }
-
-    @Test
-    @Order(2)
-    void testGetCurrencyByCode() {
-        // Use the stored addedCurrencyCode from the previous test
-        Optional<Currency> optCurrency = currencyService.queryById(addedCurrencyId);
-        assertNotNull(optCurrency.orElse(null));
-        assertEquals("測試幣", optCurrency.get().getName());
-        
-        System.out.println("Response : " + optCurrency.get().toString());
     }
 
     @Test
